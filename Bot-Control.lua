@@ -1,7 +1,6 @@
 -- Created by Sang#2180
 
 function Align(Part0,Part1,Position,Angle)
-    local RunService = game:GetService("RunService")
 	local AlignPos = Instance.new("AlignPosition", Part1)
 	AlignPos.ApplyAtCenterOfMass = false
 	AlignPos.MaxForce = 9e9*9e9
