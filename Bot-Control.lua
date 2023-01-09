@@ -131,7 +131,7 @@ table.insert(Connections, RunService.Stepped:Connect(function()
         {tostring(ReanimateRig["Left Leg"].CFrame)},
         {tostring(ReanimateRig["Right Leg"].CFrame)},
         {tostring(ReanimateRig["Torso"].CFrame)},
-		    {tostring(ReanimateRig["Head"].CFrame)}
+	{tostring(ReanimateRig["Head"].CFrame)}
     }
     SendToMaster({
         ["Operation"] = "BroadcastCFrames",
