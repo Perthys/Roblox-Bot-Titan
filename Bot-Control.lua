@@ -1,6 +1,6 @@
 -- Created by Sang#2180
-
-function Align(Part0,Part1,Position,Angle)
+local RunService = game:GetService("RunService")
+local function Align(Part0, Part1, Position, Angle)
 	local AlignPos = Instance.new("AlignPosition", Part1)
 	AlignPos.ApplyAtCenterOfMass = false
 	AlignPos.MaxForce = 9e9*9e9
@@ -8,6 +8,7 @@ function Align(Part0,Part1,Position,Angle)
 	AlignPos.ReactionForceEnabled = false
 	AlignPos.Responsiveness = 9e99*9e9
 	AlignPos.RigidityEnabled = false
+	
 	local AlignOri = Instance.new("AlignOrientation", Part1)
 	AlignOri.MaxAngularVelocity = 9e99*9e9
 	AlignOri.MaxTorque = 9e99*9e9
@@ -15,10 +16,13 @@ function Align(Part0,Part1,Position,Angle)
 	AlignOri.ReactionTorqueEnabled = false
 	AlignOri.Responsiveness = 300
 	AlignOri.RigidityEnabled = false
+	
 	local AttachmentA = Instance.new("Attachment", Part1)
+	
 	local AttachmentB = Instance.new("Attachment", Part0)
-	AttachmentA.Orientation = Angle or Vector3.new()
-	AttachmentA.Position = Position or Vector3.new()
+	
+	AttachmentA.Orientation = Angle or Vector3.zero
+	AttachmentA.Position = Position or Vector3.zero
 	AlignPos.Attachment1 = AttachmentA
 	AlignPos.Attachment0 = AttachmentB
 	AlignOri.Attachment1 = AttachmentA
@@ -106,7 +110,7 @@ local function HandlePlayerCollisions(Player)
 end
 
 for _, Player in pairs(Players:GetPlayers()) do
-	spawn(function()
+	task.spawn(function()
 		HandlePlayerCollisions(Player)
 	end)
 end
@@ -131,7 +135,7 @@ table.insert(Connections, RunService.Stepped:Connect(function()
         {tostring(ReanimateRig["Left Leg"].CFrame)},
         {tostring(ReanimateRig["Right Leg"].CFrame)},
         {tostring(ReanimateRig["Torso"].CFrame)},
-	{tostring(ReanimateRig["Head"].CFrame)}
+		    {tostring(ReanimateRig["Head"].CFrame)}
     }
     SendToMaster({
         ["Operation"] = "BroadcastCFrames",
@@ -235,9 +239,9 @@ local dances = {"dance1", "dance2", "dance3"}
 -- Existance in this list signifies that it is an emote, the value indicates if it is a looping emote
 local emoteNames = { wave = false, point = false, dance1 = true, dance2 = true, dance3 = true, laugh = false, cheer = false}
 
-function configureAnimationSet(name, fileList)
+local function configureAnimationSet(name, fileList)
 	if (animTable[name] ~= nil) then
-		for _, connection in pairs(animTable[name].connections) do
+		for _, connection in ipairs(animTable[name].connections) do
 			connection:disconnect()
 		end
 	end
@@ -253,7 +257,7 @@ function configureAnimationSet(name, fileList)
 		table.insert(animTable[name].connections, config.ChildAdded:connect(function(child) configureAnimationSet(name, fileList) end))
 		table.insert(animTable[name].connections, config.ChildRemoved:connect(function(child) configureAnimationSet(name, fileList) end))
 		local idx = 1
-		for _, childPart in pairs(config:GetChildren()) do
+		for _, childPart in ipairs(config:GetChildren()) do
 			if (childPart:IsA("Animation")) then
 				table.insert(animTable[name].connections, childPart.Changed:connect(function(property) configureAnimationSet(name, fileList) end))
 				animTable[name][idx] = {}
@@ -288,7 +292,7 @@ function configureAnimationSet(name, fileList)
 end
 
 -- Setup animation objects
-function scriptChildModified(child)
+local function scriptChildModified(child)
 	local fileList = animNames[child.Name]
 	if (fileList ~= nil) then
 		configureAnimationSet(child.Name, fileList)
@@ -318,7 +322,7 @@ local jumpMaxLimbVelocity = 0.75
 
 -- functions
 
-function stopAllAnimations()
+local function stopAllAnimations()
 	local oldAnim = currentAnim
 
 	-- return to idle if finishing an emote
@@ -340,14 +344,14 @@ function stopAllAnimations()
 	return oldAnim
 end
 
-function setAnimationSpeed(speed)
+local function setAnimationSpeed(speed)
 	if speed ~= currentAnimSpeed then
 		currentAnimSpeed = speed
 		currentAnimTrack:AdjustSpeed(currentAnimSpeed)
 	end
 end
 
-function keyFrameReachedFunc(frameName)
+local function keyFrameReachedFunc(frameName)
 	if (frameName == "End") then
 
 		local repeatAnim = currentAnim
@@ -363,7 +367,7 @@ function keyFrameReachedFunc(frameName)
 end
 
 -- Preload animations
-function playAnimation(animName, transitionTime, humanoid) 
+local function playAnimation(animName, transitionTime, humanoid) 
 		
 	local roll = math.random(1, animTable[animName].totalWeight) 
 	local origRoll = roll
@@ -412,7 +416,7 @@ local toolAnimTrack = nil
 local toolAnimInstance = nil
 local currentToolAnimKeyframeHandler = nil
 
-function toolKeyFrameReachedFunc(frameName)
+local function toolKeyFrameReachedFunc(frameName)
 	if (frameName == "End") then
 --		print("Keyframe : ".. frameName)	
 		playToolAnimation(toolAnimName, 0.0, Humanoid)
@@ -420,7 +424,7 @@ function toolKeyFrameReachedFunc(frameName)
 end
 
 
-function playToolAnimation(animName, transitionTime, humanoid, priority)	 
+local function playToolAnimation(animName, transitionTime, humanoid, priority)	 
 		
 		local roll = math.random(1, animTable[animName].totalWeight) 
 		local origRoll = roll
@@ -456,7 +460,7 @@ function playToolAnimation(animName, transitionTime, humanoid, priority)
 end
 -- Created by Sang#2180
 
-function stopToolAnimations()
+local function stopToolAnimations()
 	local oldAnim = toolAnimName
 
 	if (currentToolAnimKeyframeHandler ~= nil) then
@@ -479,7 +483,7 @@ end
 -------------------------------------------------------------------------------------------
 
 
-function onRunning(speed)
+local function onRunning(speed)
 	if speed > 0.01 then
 		playAnimation("walk", 0.1, Humanoid)
 		if currentAnimInstance and currentAnimInstance.AnimationId == "http://www.roblox.com/asset/?id=180426354" then
@@ -494,46 +498,46 @@ function onRunning(speed)
 	end
 end
 
-function onDied()
+local function onDied()
 	pose = "Dead"
 end
 
-function onJumping()
+local function onJumping()
 	playAnimation("jump", 0.1, Humanoid)
 	jumpAnimTime = jumpAnimDuration
 	pose = "Jumping"
 end
 
-function onClimbing(speed)
+local function onClimbing(speed)
 	playAnimation("climb", 0.1, Humanoid)
 	setAnimationSpeed(speed / 12.0)
 	pose = "Climbing"
 end
 
-function onGettingUp()
+local function onGettingUp()
 	pose = "GettingUp"
 end
 
-function onFreeFall()
+local function onFreeFall()
 	if (jumpAnimTime <= 0) then
 		playAnimation("fall", fallTransitionTime, Humanoid)
 	end
 	pose = "FreeFall"
 end
 
-function onFallingDown()
+local function onFallingDown()
 	pose = "FallingDown"
 end
 
-function onSeated()
+local function onSeated()
 	pose = "Seated"
 end
 
-function onPlatformStanding()
+local function onPlatformStanding()
 	pose = "PlatformStanding"
 end
 
-function onSwimming(speed)
+local function onSwimming(speed)
 	if speed > 0 then
 		pose = "Running"
 	else
@@ -541,14 +545,14 @@ function onSwimming(speed)
 	end
 end
 
-function getTool()	
+local function getTool()	
 	for _, kid in ipairs(Figure:GetChildren()) do
 		if kid.className == "Tool" then return kid end
 	end
 	return nil
 end
 
-function getToolAnim(tool)
+local function getToolAnim(tool)
 	for _, c in ipairs(tool:GetChildren()) do
 		if c.Name == "toolanim" and c.className == "StringValue" then
 			return c
@@ -557,7 +561,7 @@ function getToolAnim(tool)
 	return nil
 end
 
-function animateTool()
+local function animateTool()
 	
 	if (toolAnim == "None") then
 		playToolAnimation("toolnone", toolTransitionTime, Humanoid, Enum.AnimationPriority.Idle)
@@ -586,7 +590,7 @@ end
 
 local lastTick = 0
 
-function move(time)
+local function move(time)
 	local amplitude = 1
 	local frequency = 1
 --	time = 0
@@ -692,7 +696,7 @@ onHook()
 playAnimation("idle", 0.1, Humanoid)
 pose = "Standing"
 
-spawn(function()
+task.spawn(function()
 	while Figure.Parent ~= nil do
 		local _, time = wait(0.1)
 		move(time)
