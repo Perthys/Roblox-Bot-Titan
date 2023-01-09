@@ -17,8 +17,8 @@ function Align(Part0,Part1,Position,Angle)
 	AlignOri.RigidityEnabled = false
 	local AttachmentA = Instance.new("Attachment", Part1)
 	local AttachmentB = Instance.new("Attachment", Part0)
-	AttachmentA.Orientation = Angle or Vector3.new(0,0,0)
-	AttachmentA.Position = Position or Vector3.new(0,0,0)
+	AttachmentA.Orientation = Angle or Vector3.new()
+	AttachmentA.Position = Position or Vector3.new()
 	AlignPos.Attachment1 = AttachmentA
 	AlignPos.Attachment0 = AttachmentB
 	AlignOri.Attachment1 = AttachmentA
